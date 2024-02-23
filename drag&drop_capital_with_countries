@@ -1,0 +1,73 @@
+import time
+from selenium import webdriver
+from selenium.webdriver import Keys, ActionChains
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.select import Select
+
+ops = webdriver.ChromeOptions()
+ops.add_argument("--disable-notifications")
+driver = webdriver.Chrome(options=ops)
+driver.maximize_window()
+
+driver.implicitly_wait(10)
+
+# opening drag & drop test website
+driver.get("http://dhtmlgoodies.com/scripts/drag-drop-custom/demo-drag-drop-3.html")
+parent_window = driver.current_window_handle
+
+# draggable item - source
+all_draggable_items = driver.find_elements(By.XPATH, "//div[@class='dragableBox' and contains(@id,'box')]")
+all_droppable_space = driver.find_elements(By.XPATH, "//div[@class='dragableBoxRight']")
+ac = ActionChains(driver)
+
+def country_search(capital):
+    """to search the countries of the capital on another website"""
+    # opening a new tab in wikipedia to search
+    driver.switch_to.new_window()
+    driver.get("https://catking.in/list-of-countries-capitals-currencies-of-the-world")
+    search_window = driver.current_window_handle
+
+    all_rows = driver.find_elements(By.XPATH, "//div[@class='blog-content-wrapper']//table/tbody/tr")
+    print(len(all_rows))
+
+    for row in range(1, len(all_rows)):
+        found_capital = driver.find_element(By.XPATH, "//div[@class='blog-content-wrapper']//table/tbody/tr[" + str(row) + "]/td[3]").text
+        if found_capital == capital or capital in found_capital:
+            found_country = driver.find_element(By.XPATH, "//div[@class='blog-content-wrapper']//table/tbody/tr[" + str(row) + "]/td[2]").text
+            print(f"Capital: {found_capital}; Country: {found_country}")
+
+    driver.switch_to.window(search_window)
+    driver.close()
+
+    return found_country
+
+for drag_item in all_draggable_items:
+    for drop_item in all_droppable_space:
+        country = country_search(drag_item.text)
+        driver.switch_to.window(parent_window)
+        time.sleep(1)
+        if drag_item.text == "Oslo" and (drop_item.text == country or country in drop_item.text):
+            ac.drag_and_drop(drag_item, drop_item).perform()
+            break
+        elif drag_item.text == "Stockholm" and (drop_item.text == country or country in drop_item.text):
+            ac.drag_and_drop(drag_item, drop_item).perform()
+            break
+        elif drag_item.text == "Washington" and (drop_item.text == country or country in drop_item.text):
+            ac.drag_and_drop(drag_item, drop_item).perform()
+            break
+        elif drag_item.text == "Copenhagen" and (drop_item.text == country or country in drop_item.text):
+            ac.drag_and_drop(drag_item, drop_item).perform()
+            break
+        elif drag_item.text == "Seoul" and (drop_item.text == country or country in drop_item.text):
+            ac.drag_and_drop(drag_item, drop_item).perform()
+            break
+        elif drag_item.text == "Rome" and (drop_item.text == country or country in drop_item.text):
+            ac.drag_and_drop(drag_item, drop_item).perform()
+            break
+        elif drag_item.text == "Madrid" and (drop_item.text == country or country in drop_item.text):
+            ac.drag_and_drop(drag_item, drop_item).perform()
+            break
+
+time.sleep(3)
+
+driver.quit()
